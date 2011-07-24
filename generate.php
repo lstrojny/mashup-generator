@@ -159,7 +159,7 @@ function MashupGenerator_cacheFunction($expire, $function, array $arguments = ar
 {
     $now = time();
     $dir = __DIR__ . '/.cache';
-    $filename = $dir . str_replace('\\', '.', $function) . md5(serialize($arguments));
+    $filename = $dir . '/' . str_replace('\\', '.', $function) . md5(serialize($arguments));
     if (file_exists($filename)) {
         $file = fopen($filename, 'rb');
         $expiry = fgets($file);
