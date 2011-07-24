@@ -245,9 +245,19 @@ function MashupGenerator_getTweets($username, $limit = 10)
             new DateTimeZone('UTC')
         );
         $tweet['date']->setTimeZone($mashupGeneratorLocalTimezone);
-        $tweet['text'] = preg_replace_callback('@(https?://|#)([^\s:]+)@', function($matches) use (&$tweet) {
-            if ($matches[1] == '#') {
-                return sprintf('<span class="small">%s</span>', MashupGenerator_Escape($matches[0]));
+        $tweet['text'] = preg_replace_callback('%(https?://[^\s:]+|#[^\s:.]+|@[^\s:.]+)%', function($matches) use (&$tweet) {
+            if ($matches[0][0] == '#') {
+                return sprintf(
+                    '<a href="http://search.twitter.com/search?q=%s">%s</a>',
+                    rawurlencode($matches[0]),
+                    MashupGenerator_Escape($matches[0])
+                );
+            } elseif ($matches[0][0] == '@') {
+               return sprintf(
+                    '<a href="http://twitter.com/#!/%s">%s</a>',
+                    rawurlencode($matches[0]),
+                    MashupGenerator_Escape($matches[0])
+                );
             } else {
                 $url = $matches[0];
                 foreach (MashupGenerator_cacheFunction(60 * 60 * 24, 'get_headers', array($url)) as $header) {
