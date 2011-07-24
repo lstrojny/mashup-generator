@@ -574,5 +574,5 @@ function MashupGenerator_getBlogEntries($url, $limit = 10)
 if (file_exists('template.phtml')) {
     MashupGenerator_main("template.phtml", "out.html");
 } else {
-    MashupGenerator_main("template-example.phtml", "out.html");
+    MashupGenerator_main("template.phtml.example", "out.html");
 }
