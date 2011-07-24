@@ -32,7 +32,7 @@ function MashupGenerator_main($template, $output)
     $elipsize = function($str, $length){return mb_strlen($str, 'UTF-8') > $length
                                                ? mb_substr($str, 0, mb_strrpos(mb_substr($str, 0, $length), ' ')) . '&nbsp;…'
                                                : $str;};
-    $dateFormat = '<\s\p\a\n \t\i\t\l\e="e \t\i\m\e\z\o\n\e">F j<\s\u\p>S</\s\u\p> Y, h:i:s a</\s\p\a\n>';
+    $dateFormat = '<\s\p\a\n \t\i\t\l\e="e \t\i\m\e\z\o\n\e">F&\n\b\s\p;j<\s\u\p>S</\s\u\p>&\n\b\s\p;Y, h:i:s&\n\b\s\p;a</\s\p\a\n>';
 
     if (MASHUPGENERATOR_TWEETS) {
         $tweets = MashupGenerator_cacheFunction(
@@ -110,6 +110,17 @@ function MashupGenerator_main($template, $output)
             array(
              MASHUPGENERATOR_BLOGENTRIES_FEED,
              MASHUPGENERATOR_BLOGENTRIES_LIMIT,
+            )
+        );
+    }
+
+    if (MASHUPGENERATOR_BLOGCOMMENTS) {
+        $blogComments = MashupGenerator_cacheFunction(
+            MASHUPGENERATOR_BLOGCOMMENTS_TTL,
+            'MashupGenerator_getBlogComments',
+            array(
+             MASHUPGENERATOR_BLOGCOMMENTS_FEED,
+             MASHUPGENERATOR_BLOGCOMMENTS_LIMIT,
             )
         );
     }
@@ -567,8 +578,42 @@ function MashupGenerator_getBlogEntries($url, $limit = 10)
             'link'         => (string)$entry->link,
             'commentLink'  => (string)$entry->comments,
             'comments'     => (int)(string)$entry->children('http://purl.org/rss/1.0/modules/slash/')->comments,
-            'content'      => (string)$entry->children('http://purl.org/rss/1.0/modules/content/')->encoded,
+            'content'      => html_entity_decode($entry->children('http://purl.org/rss/1.0/modules/content/')->encoded, ENT_QUOTES, 'UTF-8'),
             'date'         => $date,
+        );
+        if (++$cnt == $limit) {
+            break;
+        }
+    }
+    MashupGenerator_log('Successfully transformed');
+
+    return $blog;
+}
+
+function MashupGenerator_getBlogComments($url, $limit = 10)
+{
+    MashupGenerator_log('Started');
+    global $mashupGeneratorLocalTimezone;
+
+    $xml = file_get_contents($url);
+    if (!$xml) {
+        MashupGenerator_error('Could not fetch "%s"', $url);
+    }
+    $xml = new SimpleXmlElement($xml);
+
+    MashupGenerator_log('Successfully parsed');
+
+    $comments = array();
+    $cnt = 0;
+    foreach ($xml->channel->item as $comment) {
+        $date = DateTime::createFromFormat(DATE_RFC2822, $comment->pubDate);
+        $date->setTimeZone($mashupGeneratorLocalTimezone);
+        $blog[] = array(
+            'title'   => (string)$comment->title,
+            'link'    => (string)$comment->link,
+            'content' => html_entity_decode($comment->children('http://purl.org/rss/1.0/modules/content/')->encoded, ENT_QUOTES, 'UTF-8'),
+            'date'    => $date,
+            'author'  => preg_replace('/.*\((.*)\)$/', '$1', $comment->author),
         );
         if (++$cnt == $limit) {
             break;
