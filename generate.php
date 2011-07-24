@@ -399,7 +399,7 @@ function MashupGenerator_getLastFmTracks($lastFmUsername, $lastFmApiKey, $limit 
     $resource = sprintf(
         'http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=%s&limit=%d&api_key=%s',
         rawurlencode($lastFmUsername),
-        $limit,
+        $limit * 2,
         rawurlencode($lastFmApiKey)
     );
 
@@ -417,7 +417,12 @@ function MashupGenerator_getLastFmTracks($lastFmUsername, $lastFmApiKey, $limit 
     MashupGenerator_log('Successfully parsed');
 
     $tracks = array();
+    $i = 0;
     foreach ($xml->recenttracks->track as $track) {
+        if ((string)$track->artist['mbid'] == '') {
+            continue;
+        }
+
         $images = array();
         foreach ($track->image as $image) {
             $images[] = (string)$image;
@@ -429,6 +434,9 @@ function MashupGenerator_getLastFmTracks($lastFmUsername, $lastFmApiKey, $limit 
             'link'   => (string)$track->url,
             'images' => $images,
         );
+        if (++$i == $limit) {
+            break;
+        }
     }
     MashupGenerator_log('Successfully transformed');
 
