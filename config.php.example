@@ -1,4 +1,6 @@
 <?php
+define('MASHUPGENERATOR_TIMEZONE', 'Europe/Berlin');
+
 define('MASHUPGENERATOR_TWEETS', false);
 define('MASHUPGENERATOR_TWEETS_TTL', 3600);
 define('MASHUPGENERATOR_TWEETS_USERNAME', '<change>');

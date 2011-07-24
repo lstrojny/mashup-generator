@@ -1,12 +1,12 @@
 <?php
-ini_set('short_open_tag', 1);
-$mashupGeneratorLocalTimezone = new DateTimeZone('Europe/Berlin');
-
 function MashupGenerator_main($template, $output)
 {
-    $shortOpenTag = ini_get('short_open_tag');
     if (!ini_get('short_open_tag')) {
-        MashupGenerator_error('INI setting short_open_tag no enabled. Please pass -dshort_open_tag=On');
+        MashupGenerator_error('INI setting short_open_tag not enabled. Please pass -dshort_open_tag=1');
+    }
+
+    if (!ini_get('allow_url_fopen')) {
+        MashupGenerator_error('INI setting allow_url_fopen not enabled. Please pass -dallow_url_fopen=1');
     }
 
     if (!is_readable($template)) {
@@ -26,6 +26,10 @@ function MashupGenerator_main($template, $output)
         MashupGenerator_error('config.php not found');
     }
     include 'config.php';
+
+    date_default_timezone_set(MASHUPGENERATOR_TIMEZONE);
+    global $mashupGeneratorLocalTimezone;
+    $mashupGeneratorLocalTimezone = new DateTimeZone(MASHUPGENERATOR_TIMEZONE);
 
     $encode = function($str){return htmlentities($str, ENT_QUOTES, 'UTF-8');};
     $elipsize = function($str, $length){return mb_strlen($str, 'UTF-8') > $length
