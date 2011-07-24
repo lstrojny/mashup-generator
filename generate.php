@@ -286,7 +286,7 @@ function MashupGenerator_getGitHubActivities($username, $limit = 10)
     $i = 0;
     foreach ($xml->entry as $entry) {
         $contrib = array();
-        $contrib['title'] = (string)$entry->title;
+        $contrib['title'] = html_entity_decode((string)$entry->title, ENT_QUOTES, 'UTF-8');
         $contrib['date'] = DateTime::createFromFormat(DATE_ATOM, $entry->published);
         $contrib['date']->setTimeZone($mashupGeneratorLocalTimezone);
         $contrib['link'] = (string)$entry->link['href'];
