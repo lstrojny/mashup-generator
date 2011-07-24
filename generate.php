@@ -28,7 +28,6 @@ function MashupGenerator_main($template, $output)
     include 'config.php';
 
     $encode = function($str){return htmlentities($str, ENT_QUOTES, 'UTF-8');};
-    $decode = function($str){return html_entity_decode($str, ENT_QUOTES, 'UTF-8');};
     $elipsize = function($str, $length){return mb_strlen($str, 'UTF-8') > $length
                                                ? mb_substr($str, 0, mb_strrpos(mb_substr($str, 0, $length), ' ')) . '&nbsp;…'
                                                : $str;};
@@ -251,7 +250,7 @@ function MashupGenerator_getTweets($username, $limit = 10)
                 return sprintf('<span class="small">%s</span>', MashupGenerator_Escape($matches[0]));
             } else {
                 $url = $matches[0];
-                foreach (get_headers($url) as $header) {
+                foreach (MashupGenerator_cacheFunction(60 * 60 * 24, 'get_headers', array($url)) as $header) {
                     if (stripos($header, 'location:') !== false) {
                         $url = preg_replace('/location:\s*/i', '', $header);
                     }
