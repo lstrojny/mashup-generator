@@ -1,0 +1,8 @@
+<html>
+    <h1>Example Template</h1>
+    <body>
+        <? foreach ($lastFmTracks as $track): ?>
+            <a href="<?= $encode($track['link']) ?>"><?= $encode($track['artist']) ?> - <?= $encode($track['title']) ?></a>
+        <? endforeach ?>
+    </body>
+</html>
