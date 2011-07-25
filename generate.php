@@ -239,7 +239,7 @@ function MashupGenerator_getTweets($username, $limit = 10)
 
     MashupGenerator_log('Successfully decoded');
 
-    $tweet = array_slice($tweets, 0, $limit);
+    $tweets = array_slice($tweets, 0, $limit);
 
     foreach ($tweets as &$tweet) {
         // Wed Jul 20 23:11:50 +0000 2011
