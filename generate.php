@@ -423,7 +423,7 @@ function MashupGenerator_getLastFmTracks($lastFmUsername, $lastFmApiKey, $limit 
     $resource = sprintf(
         'http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=%s&limit=%d&api_key=%s',
         rawurlencode($lastFmUsername),
-        $limit * 2,
+        $limit * 4,
         rawurlencode($lastFmApiKey)
     );
 
