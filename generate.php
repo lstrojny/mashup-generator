@@ -22,10 +22,10 @@ function MashupGenerator_main($template, $output)
         MashupGenerator_error('Output tempfile "%s" it no writable', $outputTempfile);
     }
 
-    if (!file_exists('config.php')) {
-        MashupGenerator_error('config.php not found');
+    if (!file_exists(__DIR__ . '/config.php')) {
+        MashupGenerator_error('%s/config.php not found', __DIR__);
     }
-    include 'config.php';
+    include __DIR__ . '/config.php';
 
     date_default_timezone_set(MASHUPGENERATOR_TIMEZONE);
     global $mashupGeneratorLocalTimezone;
@@ -637,8 +637,8 @@ function MashupGenerator_getBlogComments($url, $limit = 10)
     return $blog;
 }
 
-if (file_exists('template.phtml')) {
-    MashupGenerator_main("template.phtml", "out.html");
+if (file_exists(__DIR__ . '/template.phtml')) {
+    MashupGenerator_main(__DIR__ . '/template.phtml', 'index.html');
 } else {
-    MashupGenerator_main("template.phtml.example", "out.html");
+    MashupGenerator_main(__DIR__ . '/template.phtml.example', 'out.html');
 }
