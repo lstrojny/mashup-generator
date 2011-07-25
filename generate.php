@@ -154,7 +154,7 @@ function MashupGenerator_log($message)
         $arg = preg_replace('/(key|signature)([^=]*)=([^\&]+)/i', '\1\2=...', $arg);
     }
 
-    $date = DateTime::createFromFormat('U.u', microtime(true));
+    $date = DateTime::createFromFormat('U.u', (string)microtime(true));
     $fmt = 'D, d M y H:i:s.u';
 
     $bt = debug_backtrace();
