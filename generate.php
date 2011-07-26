@@ -101,7 +101,8 @@ function MashupGenerator_main($template, $output)
              MASHUPGENERATOR_TOPALBUM_LASTFM_USERNAME,
              MASHUPGENERATOR_TOPALBUM_LASTFM_APIKEY,
              MASHUPGENERATOR_TOPALBUM_LASTFM_AWS_KEY,
-             MASHUPGENERATOR_TOPALBUM_LASTFM_AWS_SECRET
+             MASHUPGENERATOR_TOPALBUM_LASTFM_AWS_SECRET,
+             MASHUPGENERATOR_TOPALBUM_LASTFM_AMAZON_AFFILIATE,
             )
         );
     }
@@ -467,7 +468,8 @@ function MashupGenerator_getLastFmTracks($lastFmUsername, $lastFmApiKey, $limit 
     return $tracks;
 }
 
-function MashupGenerator_getTopAlbumFromLastFmAndCoverFromAmazon($lastFmUsername, $lastFmApiKey, $awsId, $awsKey)
+function MashupGenerator_getTopAlbumFromLastFmAndCoverFromAmazon(
+    $lastFmUsername, $lastFmApiKey, $awsId, $awsKey, $amazonAffiliate)
 {
     $resource = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=%s&api_key=%s&format=json&limit=2&period=7day';
     $resource = sprintf($resource, rawurlencode($lastFmUsername), rawurlencode($lastFmApiKey));
@@ -489,6 +491,7 @@ function MashupGenerator_getTopAlbumFromLastFmAndCoverFromAmazon($lastFmUsername
         $params = array(
             'Service'        => 'AWSECommerceService',
             'AWSAccessKeyId' => $awsId,
+            'AssociateTag'   => $amazonAffiliate,
             'Operation'      => 'ItemSearch',
             'SearchIndex'    => 'Music',
             'Artist'         => $artistName,
