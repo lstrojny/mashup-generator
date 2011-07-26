@@ -43,7 +43,7 @@ function MashupGenerator_main($template, $output)
             'MashupGenerator_getTweets',
             array(
              MASHUPGENERATOR_TWEETS_USERNAME,
-             MASHUPGENERATOR_TWEETS_LIMIT
+             MASHUPGENERATOR_TWEETS_LIMIT,
             )
         );
     }
@@ -76,7 +76,7 @@ function MashupGenerator_main($template, $output)
             'MashupGenerator_getPinboardBookmarks',
             array(
              MASHUPGENERATOR_PINBOARDBOOKMARKS_USERNAME,
-             MASHUPGENERATOR_PINBOARDBOOKMARKS_LIMIT
+             MASHUPGENERATOR_PINBOARDBOOKMARKS_LIMIT,
             )
         );
     }
