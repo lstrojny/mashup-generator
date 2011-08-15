@@ -35,7 +35,6 @@ function MashupGenerator_main($template, $output)
     $elipsize = function($str, $length){return mb_strlen($str, 'UTF-8') > $length
                                                ? mb_substr($str, 0, mb_strrpos(mb_substr($str, 0, $length), ' ')) . '&nbsp;…'
                                                : $str;};
-    $dateFormat = '<\s\p\a\n \t\i\t\l\e="e \t\i\m\e\z\o\n\e">F&\n\b\s\p;j<\s\u\p>S</\s\u\p>&\n\b\s\p;Y, h:i:s&\n\b\s\p;a</\s\p\a\n>';
 
     if (MASHUPGENERATOR_TWEETS) {
         $tweets = MashupGenerator_cacheFunction(
@@ -155,7 +154,12 @@ function MashupGenerator_log($message)
         $arg = preg_replace('/(key|signature)([^=]*)=([^\&]+)/i', '\1\2=...', $arg);
     }
 
-    $date = DateTime::createFromFormat('U.u', (string)microtime(true));
+    $microtime = (string)microtime(true);
+    $date = DateTime::createFromFormat('U.u', $microtime);
+    if (!$date) {
+        printf("Error creating date from microtime %s: %s\n", $microtime, print_r(DateTime::getLastErrors(), true));
+        exit('COULD NOT CREATE MICROTIME');
+    }
     $fmt = 'D, d M y H:i:s.u';
 
     $bt = debug_backtrace();
