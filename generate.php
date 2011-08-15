@@ -489,7 +489,10 @@ function MashupGenerator_getTopAlbumFromLastFmAndCoverFromAmazon(
     MashupGenerator_log('Successfully decoded');
 
     $albumInfo = array();
-    foreach ($topAlbums['topalbums']['album'] as $albumCnt => $album) {
+    $albums = isset($topAlbums['topalbums']['album'][0])
+            ? $topAlbums['topalbums']['album']
+            : array($topAlbums['topalbums']['album']);
+    foreach ($albums as $albumCnt => $album) {
         $artistName = mb_strtolower($album['artist']['name'], 'UTF-8');
         $albumName = mb_strtolower($album['name'], 'UTF-8');
         $params = array(
