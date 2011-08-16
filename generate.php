@@ -128,6 +128,29 @@ function MashupGenerator_main($template, $output)
         );
     }
 
+    if (MASHUPGENERATOR_INSTAGRAM) {
+        $instagramPhotos = MashupGenerator_cacheFunction(
+            MASHUPGENERATOR_INSTAGRAM_TTL,
+            'MashupGenerator_getInstagramPhotos',
+            array(
+             MASHUPGENERATOR_INSTAGRAM_USER_ID,
+             MASHUPGENERATOR_INSTAGRAM_ACCESS_TOKEN,
+             MASHUPGENERATOR_INSTAGRAM_LIMIT,
+            )
+        );
+    }
+
+    if (MASHUPGENERATOR_FACEBOOK_PHOTOS) {
+        $facebookPhotos = MashupGenerator_cacheFunction(
+            MASHUPGENERATOR_FACEBOOK_PHOTOS_TTL,
+            'MashupGenerator_getFacebookPhotos',
+            array(
+             MASHUPGENERATOR_FACEBOOK_PHOTOS_URL,
+             MASHUPGENERATOR_FACEBOOK_PHOTOS_LIMIT,
+            )
+        );
+    }
+
     ob_start();
     include $template;
     file_put_contents($outputTempfile, ob_get_clean());
@@ -645,6 +668,75 @@ function MashupGenerator_getBlogComments($url, $limit = 10)
     MashupGenerator_log('Successfully transformed');
 
     return $blog;
+}
+
+function MashupGenerator_getInstagramPhotos($userId, $accessToken, $limit = 10)
+{
+    MashupGenerator_log('Started');
+    global $mashupGeneratorLocalTimezone;
+
+    $url = sprintf(
+        'https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%d',
+        rawurlencode($userId),
+        rawurlencode($accessToken),
+        $limit
+    );
+    $json = file_get_contents($url);
+    if (!$json) {
+        MashupGenerator_error('Could not fetch "%s"', $url);
+    }
+    $data = json_decode($json, true);
+
+    foreach ($data['data'] as &$value) {
+        $value['date'] = DateTime::createFromFormat('U', $value['created_time']);
+        $value['date']->setTimeZone($mashupGeneratorLocalTimezone);
+    }
+
+    MashupGenerator_log('Successfully transformed');
+
+    return $data['data'];
+}
+
+function MashupGenerator_getFacebookPhotos($url, $limit = 10)
+{
+    MashupGenerator_log('Started');
+    global $mashupGeneratorLocalTimezone;
+
+    $url = sprintf("%s&limit=%d&date_format=U", $url, $limit * 100);
+    $json = file_get_contents($url);
+    if (!$json) {
+        MashupGenerator_error('Could not fetch "%s"', $url);
+    }
+    $data = json_decode($json, true);
+
+    $data = array_filter($data['data'], function($e) {
+        return $e['type'] == 'photo';
+    });
+
+    foreach ($data as &$value) {
+        $value['date'] = DateTime::createFromFormat('U', $value['created_time']);
+        $value['date']->setTimeZone($mashupGeneratorLocalTimezone);
+
+        list($width, $height) = MashupGenerator_cacheFunction(
+            60 * 60 * 24 * 356,
+            'getimagesize',
+            array($value['picture'])
+        );
+        $value['orientation'] = $width > $height ? 'wide' : 'portrait';
+    }
+
+    MashupGenerator_log('Successfully transformed');
+
+    return $data;
+}
+
+function MashupGenerator_ifSet(array $struct, $fields, $instance = null)
+{
+    foreach ((array)$fields as $field) {
+        if (isset($struct[$field]) && (!$instance || $struct[$field] instanceof $instance)) {
+            return $struct[$field];
+        }
+    }
 }
 
 if (file_exists(__DIR__ . '/template.phtml')) {
