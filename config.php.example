@@ -45,13 +45,29 @@ define('MASHUPGENERATOR_BLOGCOMMENTS_TTL', 3600);
 define('MASHUPGENERATOR_BLOGCOMMENTS_FEED', '<change>');
 define('MASHUPGENERATOR_BLOGCOMMENTS_LIMIT', 10);
 
+/**
+ * Steps to retrieve an Instagram OAuth API:
+ *
+ * 1.) Register a client at http://instagram.com/developer/manage/
+ * 2.) Open https://instagram.com/oauth/authorize/?client_id=<client_id>&redirect_uri=<redirect_uri>&response_type=token
+ * 3.) Save the OAuth access token that has been appended to your redirect URI
+ */
 define('MASHUPGENERATOR_INSTAGRAM', false);
 define('MASHUPGENERATOR_INSTAGRAM_TTL', 3600);
 define('MASHUPGENERATOR_INSTAGRAM_USER_ID', '');
 define('MASHUPGENERATOR_INSTAGRAM_ACCESS_TOKEN', '<change>');
 define('MASHUPGENERATOR_INSTAGRAM_LIMIT', 10);
 
+/**
+ * Steps to get a Facebook access token:
+ *
+ * 1.) Register an app at https://developers.facebook.com/apps
+ * 2.) Open https://www.facebook.com/dialog/oauth?client_id=<app id>&redirect_uri=<url>&scope=offline_access,read_stream&response_type=token
+ *      - <url> need to be registered at https://developers.facebook.com/apps/<app_id>/websites
+ * 3.) Save the OAuth access token that has been appended to your redirect URI
+ */
 define('MASHUPGENERATOR_FACEBOOK_PHOTOS', false);
 define('MASHUPGENERATOR_FACEBOOK_PHOTOS_TTL', 3600);
-define('MASHUPGENERATOR_FACEBOOK_PHOTOS_URL', 'https://graph.facebook.com/me/feed?access_token=...');
+define('MASHUPGENERATOR_FACEBOOK_PHOTOS_USER_ID', '<change>');
+define('MASHUPGENERATOR_FACEBOOK_PHOTOS_ACCESS_TOKEN', '<change>');
 define('MASHUPGENERATOR_FACEBOOK_PHOTOS_LIMIT', 10);

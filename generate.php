@@ -145,7 +145,8 @@ function MashupGenerator_main($template, $output)
             MASHUPGENERATOR_FACEBOOK_PHOTOS_TTL,
             'MashupGenerator_getFacebookPhotos',
             array(
-             MASHUPGENERATOR_FACEBOOK_PHOTOS_URL,
+             MASHUPGENERATOR_FACEBOOK_PHOTOS_USER_ID,
+             MASHUPGENERATOR_FACEBOOK_PHOTOS_ACCESS_TOKEN,
              MASHUPGENERATOR_FACEBOOK_PHOTOS_LIMIT,
             )
         );
@@ -699,12 +700,18 @@ function MashupGenerator_getInstagramPhotos($userId, $accessToken, $limit = 10)
     return $data['data'];
 }
 
-function MashupGenerator_getFacebookPhotos($url, $limit = 10)
+function MashupGenerator_getFacebookPhotos($userId, $accessToken, $limit = 10)
 {
     MashupGenerator_log('Started');
     global $mashupGeneratorLocalTimezone;
 
-    $url = sprintf("%s&limit=%d&date_format=U", $url, $limit * 100);
+    $url = sprintf(
+        'https://graph.facebook.com/%s/feed?access_token=%s&limit=%d&date_format=%s',
+        urlencode($userId),
+        urlencode($accessToken),
+        $limit * 100,
+        urlencode(DATE_RFC2822)
+    );
     $json = file_get_contents($url);
     if (!$json) {
         MashupGenerator_error('Could not fetch "%s"', $url);
@@ -718,7 +725,7 @@ function MashupGenerator_getFacebookPhotos($url, $limit = 10)
     $data = array_slice($data, 0, $limit);
 
     foreach ($data as &$value) {
-        $value['date'] = DateTime::createFromFormat('U', $value['created_time']);
+        $value['date'] = DateTime::createFromFormat(DATE_RFC2822, $value['created_time']);
         $value['date']->setTimeZone($mashupGeneratorLocalTimezone);
 
         list($width, $height) = MashupGenerator_cacheFunction(
