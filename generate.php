@@ -381,6 +381,7 @@ function MashupGenerator_getFlickrPhotos($flickrId, $limit = 10)
     foreach ($photos as &$photo) {
         $photo['date_uploaded'] = DateTime::createFromFormat('U', $photo['date']);
         $photo['date_uploaded']->setTimeZone($mashupGeneratorLocalTimezone);
+        $photo['source'] = 'Flickr';
     }
 
     MashupGenerator_log('Successfully transformed');
@@ -690,6 +691,7 @@ function MashupGenerator_getInstagramPhotos($userId, $accessToken, $limit = 10)
     foreach ($data['data'] as &$value) {
         $value['date'] = DateTime::createFromFormat('U', $value['created_time']);
         $value['date']->setTimeZone($mashupGeneratorLocalTimezone);
+        $value['source'] = 'Instagram';
     }
 
     MashupGenerator_log('Successfully transformed');
@@ -713,6 +715,8 @@ function MashupGenerator_getFacebookPhotos($url, $limit = 10)
         return $e['type'] == 'photo';
     });
 
+    $data = array_slice($data, 0, $limit);
+
     foreach ($data as &$value) {
         $value['date'] = DateTime::createFromFormat('U', $value['created_time']);
         $value['date']->setTimeZone($mashupGeneratorLocalTimezone);
@@ -723,6 +727,7 @@ function MashupGenerator_getFacebookPhotos($url, $limit = 10)
             array($value['picture'])
         );
         $value['orientation'] = $width > $height ? 'wide' : 'portrait';
+        $value['source'] = 'Facebook';
     }
 
     MashupGenerator_log('Successfully transformed');
